@@ -1,0 +1,4 @@
+.DS_Store
+docs/build/*
+__pycache__
+.pytest_cache
