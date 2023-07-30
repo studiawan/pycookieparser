@@ -2,12 +2,17 @@ from setuptools import setup
 
 setup(
     name='pycookieparser',
-    version='0.1',
+    version='0.0.1',
     description='A parser for binary cookie files',
     author='Hudan Studiawan',
     author_email='studiawan@gmail.com',
     url='https://github.com/studiawan/pycookieparser',
-    packages=['pycookieparser'],  
+    packages=['pycookieparser'],
+    entry_points={
+        'console_scripts': [
+            'pycookieparser = pycookieparser.pycookieparser:main',
+        ]  
+    },
     install_requires=['pytest', 'Sphinx'],
     classifiers=[
         'Development Status :: 4 - Beta',
