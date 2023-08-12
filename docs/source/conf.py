@@ -15,7 +15,7 @@ copyright = '2023, Hudan Studiawan'
 author = 'Hudan Studiawan'
 release = '0.0.1'
 
-sys.path.insert(0, os.path.abspath(os.path.join("..", "..", "src")))
+sys.path.insert(0, os.path.abspath(os.path.join("..", "..", "pycookieparser")))
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
