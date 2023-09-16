@@ -1,4 +1,7 @@
-import sys
+import json
+import csv
+import argparse
+import os
 from struct import unpack
 from time import strftime, gmtime
 
@@ -55,7 +58,7 @@ class PyCookieParser(object):
                 return None
 
             num_pages = self._read_chunk_big_endian()
-            print('Number of pages:', num_pages)
+            # print('Number of pages:', num_pages)
 
             page_sizes = self._read_page_sizes(num_pages)
 
@@ -67,6 +70,52 @@ class PyCookieParser(object):
             print('Failed to read the cookie file:', self.file_name)
             return None
 
+    def write_results(self, cookies: list, output_type: str, output_path: str) -> None:
+        file_name = os.path.join(output_path, 'cookie-results') 
+        
+        if output_type == 'json':
+            with open(file_name + '.json', 'w') as f:
+                json.dump(cookies, f, indent=4)
+
+        elif output_type == 'txt':
+            with open(file_name + '.txt', 'w') as f:
+                for cookie in cookies:
+                    cookie_string = (
+                        f"Cookie: {cookie['name']}={cookie['value']}; "
+                        f"domain={cookie['url']}; "
+                        f"path={cookie['path']}; "
+                        f"created={cookie['create_date']};"
+                        f"expires={cookie['expiry_date']}; "
+                        f"{cookie['cookie_flag']}"
+                    )
+                    f.write(cookie_string + '\n')
+        
+        elif output_type == 'csv':
+            with open(file_name + '.csv', 'w') as f:
+                writer = csv.writer(f)
+                writer.writerow(['name', 
+                                 'value', 
+                                 'url', 
+                                 'path', 
+                                 'expiry_date', 
+                                 'create_date', 
+                                 'cookie_flag'])
+
+                for cookie in cookies:
+                    row = [
+                        cookie['name'], 
+                        cookie['value'],
+                        cookie['url'],
+                        cookie['path'],
+                        cookie['expiry_date'],
+                        cookie['create_date'],
+                        cookie['cookie_flag']
+                    ]
+                    writer.writerow(row)
+        
+        else:
+            print('Output file type is not supported.')
+    
     def _increment_offset(self, chunk_size: int):
         """
         Increment the current offset into the cookie file by the given chunk size.
@@ -92,7 +141,7 @@ class PyCookieParser(object):
 
         return chunk
     
-    def _read_chunk_big_endian(self, chunk_size: int=4):
+    def _read_chunk_big_endian(self, chunk_size: int=4) -> int:
         """
         Read a chunk from the cookie file as a big-endian integer, incrementing the offset.
         Returns the chunk as an integer.
@@ -107,7 +156,7 @@ class PyCookieParser(object):
 
         return chunk
     
-    def _read_chunk_little_endian(self, chunk_size: int=4):
+    def _read_chunk_little_endian(self, chunk_size: int=4) -> int:
         """
         Read a chunk from the cookie file as a little-endian integer, incrementing the offset.
         Returns the chunk as an integer.
@@ -153,7 +202,7 @@ class PyCookieParser(object):
             page_size = self._read_chunk_big_endian()
             page_sizes.append(page_size)
             
-            print('Page:', page, 'size:', page_size)
+            # print('Page:', page, 'size:', page_size)
         
         return page_sizes
 
@@ -175,7 +224,7 @@ class PyCookieParser(object):
 
             # cookie number
             cookie_number = self._read_chunk_little_endian()
-            print('Cookie number:', cookie_number)
+            # print('Cookie number:', cookie_number)
 
             cookie_offsets = self._read_cookie_offsets(cookie_number)
 
@@ -204,11 +253,11 @@ class PyCookieParser(object):
             offset = self._read_chunk_little_endian()
             cookie_offsets.append(offset)
 
-            print('Cookie offset', offset)
+            # print('Cookie offset', offset)
         
         return cookie_offsets
 
-    def _read_cookie(self, offset: int):
+    def _read_cookie(self, offset: int) -> dict:
         """
         Read a cookie at a given offset in the cookie file.
 
@@ -220,14 +269,14 @@ class PyCookieParser(object):
         """
         
         cookie_size = self._read_chunk_little_endian()
-        print('Cookie size:', cookie_size)
+        # print('Cookie size:', cookie_size)
 
         # unknown
         _ = self._read_chunk()
 
         flag = self._read_chunk_little_endian()
         cookie_flag = self._get_cookie_flag(flag)
-        print('Flag:', flag, cookie_flag)
+        # print('Flag:', flag, cookie_flag)
 
         # unknown
         _ = self._read_chunk()
@@ -237,24 +286,24 @@ class PyCookieParser(object):
         pathoffset = self._read_chunk_little_endian()
         valueoffset = self._read_chunk_little_endian()
 
-        print(urloffset, nameoffset, pathoffset, valueoffset)
+        # print(urloffset, nameoffset, pathoffset, valueoffset)
 
         # end of cookie
         _ = self._read_chunk(chunk_size=8)
 
         expiry_date_epoch = self._read_chunk_double() + 978307200
         expiry_date = strftime("%a, %d %b %Y ", gmtime(expiry_date_epoch))[:-1]
-        print(expiry_date)
+        # print(expiry_date)
 
         create_date_epoch = self._read_chunk_double() + 978307200
         create_date = strftime("%a, %d %b %Y ", gmtime(create_date_epoch))[:-1]
-        print(create_date)
+        # print(create_date)
 
         url = self._read_null_terminated_string()
         name = self._read_null_terminated_string()
         path = self._read_null_terminated_string()
         value = self._read_null_terminated_string()
-        print(url, name, path, value)
+        # print(url, name, path, value)
 
         cookie = {
             'name': name,
@@ -313,15 +362,23 @@ class PyCookieParser(object):
 
 
 def main():
-    try:
-        file_name = sys.argv[1]
-        parser = PyCookieParser(file_name)
-        parser.open_file()
-        cookies = parser.read_cookie_file()
-        parser.close_file()
-        if cookies:
-            for cookie in cookies:
-                print('Cookie:', cookie)
+    # command option
+    parser = argparse.ArgumentParser(description='iOS binary cookie parser.')
+    parser.add_argument('-i', '--input_path', action='store', required=True, help='Input file path')
+    parser.add_argument('-t', '--output_type', choices=['txt', 'json', 'csv'], action='store', required=True, help='Output file type, such as txt, json, and csv')
+    parser.add_argument('-o', '--output_path', action='store', required=True, help='Output file path')
 
-    except IndexError:
-        print('Usage: python pycookieparser.py cookie-file-name')
+    # parse arguments
+    arguments = parser.parse_args()
+
+    # call the parser
+    parser = PyCookieParser(arguments.input_path)
+    print('Parsing a cookie file    :', arguments.input_path)
+    parser.open_file()
+    cookies = parser.read_cookie_file()
+    parser.close_file()
+    
+    # write results
+    if cookies:
+        parser.write_results(cookies, arguments.output_type, arguments.output_path)
+        print('Saving parsing results to:', arguments.output_path)
