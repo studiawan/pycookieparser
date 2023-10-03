@@ -70,8 +70,8 @@ class PyCookieParser(object):
             print('Failed to read the cookie file:', self.file_name)
             return None
 
-    def write_results(self, cookies: list, output_type: str, output_path: str) -> None:
-        file_name = os.path.join(output_path, 'cookie-results') 
+    def write_results(self, cookies: list, output_type: str, output_path: str, input_file: str) -> None:
+        file_name = os.path.join(output_path, input_file + '-parsed') 
         
         if output_type == 'json':
             with open(file_name + '.json', 'w') as f:
@@ -377,8 +377,11 @@ def main():
     parser.open_file()
     cookies = parser.read_cookie_file()
     parser.close_file()
+
+    # get cookie file name
+    file_name = os.path.basename(arguments.input_path)
     
     # write results
     if cookies:
-        parser.write_results(cookies, arguments.output_type, arguments.output_path)
-        print('Saving parsing results to:', arguments.output_path)
+        parser.write_results(cookies, arguments.output_type, arguments.output_path, file_name)
+        print('Saving parsing results to:', os.path.join(arguments.output_path, file_name + '-parsed.' + arguments.output_type))
