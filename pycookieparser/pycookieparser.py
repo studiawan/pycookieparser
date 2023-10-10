@@ -58,7 +58,6 @@ class PyCookieParser(object):
                 return None
 
             num_pages = self._read_chunk_big_endian()
-            # print('Number of pages:', num_pages)
 
             page_sizes = self._read_page_sizes(num_pages)
 
@@ -201,8 +200,6 @@ class PyCookieParser(object):
         for page in range(num_pages):            
             page_size = self._read_chunk_big_endian()
             page_sizes.append(page_size)
-            
-            # print('Page:', page, 'size:', page_size)
         
         return page_sizes
 
@@ -219,16 +216,15 @@ class PyCookieParser(object):
         
         cookies = []
         for _ in page_sizes:
-            # header
+            # header b'\x00\x00\x01\x00'
             _ = self._read_chunk()  
 
             # cookie number
             cookie_number = self._read_chunk_little_endian()
-            # print('Cookie number:', cookie_number)
 
             cookie_offsets = self._read_cookie_offsets(cookie_number)
 
-            # end of header
+            # end of header b'\x00\x00\x00\x00'
             _ = self._read_chunk()
 
             for offset in cookie_offsets:
@@ -252,8 +248,6 @@ class PyCookieParser(object):
         for _ in range(cookie_number):
             offset = self._read_chunk_little_endian()
             cookie_offsets.append(offset)
-
-            # print('Cookie offset', offset)
         
         return cookie_offsets
 
@@ -269,16 +263,14 @@ class PyCookieParser(object):
         """
         
         cookie_size = self._read_chunk_little_endian()
-        # print('Cookie size:', cookie_size)
 
-        # unknown
+        # unknown b'\x00\x00\x00\x00'
         _ = self._read_chunk()
 
         flag = self._read_chunk_little_endian()
         cookie_flag = self._get_cookie_flag(flag)
-        # print('Flag:', flag, cookie_flag)
 
-        # unknown
+        # unknown b'\x00\x00\x00\x00'
         _ = self._read_chunk()
 
         urloffset = self._read_chunk_little_endian()
@@ -286,24 +278,19 @@ class PyCookieParser(object):
         pathoffset = self._read_chunk_little_endian()
         valueoffset = self._read_chunk_little_endian()
 
-        # print(urloffset, nameoffset, pathoffset, valueoffset)
-
-        # end of cookie
+        # unknown b'\x00\x00\x00\x00\x00\x00\x00\x00'
         _ = self._read_chunk(chunk_size=8)
 
         expiry_date_epoch = self._read_chunk_double() + 978307200
         expiry_date = strftime("%a, %d %b %Y ", gmtime(expiry_date_epoch))[:-1]
-        # print(expiry_date)
 
         create_date_epoch = self._read_chunk_double() + 978307200
         create_date = strftime("%a, %d %b %Y ", gmtime(create_date_epoch))[:-1]
-        # print(create_date)
 
         url = self._read_null_terminated_string()
         name = self._read_null_terminated_string()
         path = self._read_null_terminated_string()
         value = self._read_null_terminated_string()
-        # print(url, name, path, value)
 
         cookie = {
             'name': name,
