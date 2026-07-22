@@ -7,5 +7,5 @@ from iOS devices stored in binary format.
 
 from pycookieparser.pycookieparser import PyCookieParser
 
-__version__ = "0.0.3"
+__version__ = "0.0.2"
 __all__ = ["PyCookieParser"]
