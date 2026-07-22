@@ -32,6 +32,6 @@ setup(
         'Programming Language :: Python :: 3.12',
         'Programming Language :: Python :: 3.13',
         'Topic :: Security',
-        'Topic :: System :: Forensics',
+        'Topic :: Utilities',
     ],
 )
