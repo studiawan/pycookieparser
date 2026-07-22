@@ -13,13 +13,17 @@ To ensure your software functions as expected and maintain code quality, running
 
    Replace ``/path/to/your/project`` with the actual path to your project's root directory.
 
-2. Activate the Anaconda virtual environment:
+2. Activate the virtual environment:
    
-   Before running the tool, ensure you activate the ``pycookieparser`` virtual environment using Anaconda. To do this, type the following command::
+   Before running the tests, ensure you activate the ``pycookieparser`` virtual environment. To do this, type the following command:
 
-      conda activate pycookieparser
+   - **Mac/Linux**::
 
-   Wait a few moments for the environment to activate. You'll know it's active when you see ``(pycookieparser)`` at the beginning of your terminal or command prompt line.
+      source .venv/bin/activate
+
+   - **Windows**::
+
+      .venv\Scripts\activate
 
 3. Executing tests with pytest
 

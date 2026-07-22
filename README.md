@@ -3,28 +3,36 @@ iOS binary cookie parser.
 
 # How to install
 
-Create Anaconda virtual environment and activate it:
-
-`conda create --name pycookieparser`
-`conda activate pycookieparser`
-
 Clone the repository: 
 
 `git clone https://github.com/studiawan/pycookieparser.git`
 
-Then go to root project directory, and run: 
+Then go to the root project directory, create a virtual environment, and activate it:
+
+`python3 -m venv .venv`
+`source .venv/bin/activate`
+
+Install the package:
 
 `pip install .`
+
+For development (includes pytest, Sphinx):
+
+`pip install -e ".[dev]"`
 
 # How to run
 
 To run the tool, you can type this command in the terminal:
 
-`pycookieparser /path/to/cookie_file`
+`pycookieparser -i /path/to/cookie_file -t {txt,json,csv} -o /path/to/output_dir [--summary]`
 
 For example:
 
-`pycookieparser tests/fdda2f81cc0b838dc00e3050b14da7ef2d835f3c`
+`pycookieparser -i tests/fdda2f81cc0b838dc00e3050b14da7ef2d835f3c -t json -o . --summary`
+
+Or for batch directory processing:
+
+`pycookieparser -d /path/to/directory -t json -o /path/to/output_dir --summary`
 
 # How to run tests
 

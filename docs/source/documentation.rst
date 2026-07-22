@@ -3,7 +3,7 @@ How to build documentation
 
 To ensure your documentation is built correctly, you'll want to follow a series of steps that will guide you through the process. Below, you'll find a detailed walk-through that will help you effectively build your documentation.
 
-.. note:: Make sure to activate your Anaconda virtual environment.
+.. note:: Make sure to activate your virtual environment (``source .venv/bin/activate``).
 
 1. Navigate to the documentation directory.
 

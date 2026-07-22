@@ -4,3 +4,22 @@ __pycache__
 .pytest_cache
 *.egg-info
 .vscode
+
+# Distribution
+dist/
+build/
+*.egg
+*-parsed.*
+
+# Docker
+.dockerignore
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# IDE
+.idea/
+*.swp
+*.swo

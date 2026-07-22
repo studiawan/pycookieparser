@@ -11,9 +11,9 @@ import os
 
 
 project = 'pycookieparser'
-copyright = '2023, Hudan Studiawan'
+copyright = '2026, Hudan Studiawan'
 author = 'Hudan Studiawan'
-release = '0.0.1'
+release = '0.0.2'
 
 sys.path.insert(0, os.path.abspath(os.path.join("..", "..", "pycookieparser")))
 
@@ -22,6 +22,8 @@ sys.path.insert(0, os.path.abspath(os.path.join("..", "..", "pycookieparser")))
 
 extensions = [
     "sphinx.ext.autodoc",
+    "sphinx.ext.viewcode",
+    "sphinx.ext.napoleon",
 ]
 
 templates_path = ['_templates']
@@ -32,9 +34,5 @@ exclude_patterns = []
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = 'classic'
+html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
-html_theme_options = {
-    "sidebarwidth": "32%"
-}
-

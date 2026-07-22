@@ -17,6 +17,7 @@ pycookieparser is a Python tool specifically developed for forensic investigator
    howtotest
    documentation
    pycookieparser
+   changelog
 
 
 Indices and tables
